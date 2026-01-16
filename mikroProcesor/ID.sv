@@ -41,7 +41,7 @@ module ID#(
         output logic C_OV_en,
         input wire P_in, OV_in, Z_in, S_in, C_in,
         output logic C_OV_kasowanie,
-        output logic flagi_en,
+        // output logic flagi_en,
 
         //Stos
         output logic ID_push,
