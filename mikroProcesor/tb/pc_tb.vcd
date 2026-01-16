@@ -1,0 +1,107 @@
+$date
+	Sun Nov 30 13:13:28 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module pc_tb $end
+$var wire 8 ! PC_count [7:0] $end
+$var parameter 32 " W $end
+$var reg 1 # ID_rst $end
+$var reg 8 $ adres_skok_pc [7:0] $end
+$var reg 1 % clk $end
+$var reg 1 & rst $end
+$var reg 1 ' skok_pc $end
+$scope module uut_pc $end
+$var wire 1 # ID_rst $end
+$var wire 8 ( adres_skok_pc [7:0] $end
+$var wire 1 % clk $end
+$var wire 1 & rst $end
+$var wire 1 ' skok_pc $end
+$var parameter 32 ) W $end
+$var reg 8 * PC_count [7:0] $end
+$scope begin LicznikRozkazow $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+b1000 )
+b1000 "
+$end
+#0
+$dumpvars
+bx *
+b0 (
+0'
+0&
+1%
+b0 $
+0#
+bx !
+$end
+#5000
+0%
+#10000
+1%
+#15000
+0%
+#20000
+b0 !
+b0 *
+1%
+1&
+#25000
+0%
+#30000
+1%
+#35000
+0%
+#40000
+1%
+#43000
+0&
+#45000
+0%
+#50000
+b1 !
+b1 *
+1%
+#55000
+0%
+#60000
+b10 !
+b10 *
+1%
+#65000
+0%
+#70000
+b10101010 !
+b10101010 *
+1%
+b10101010 $
+b10101010 (
+1'
+#75000
+0%
+#80000
+b10101011 !
+b10101011 *
+1%
+0'
+#85000
+0%
+#90000
+b10101100 !
+b10101100 *
+1%
+#95000
+0%
+#100000
+b10101101 !
+b10101101 *
+1%

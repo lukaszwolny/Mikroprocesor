@@ -1,0 +1,20 @@
+iverilog -g2012 -o pc_tb.vvp ../pc.sv pc_tb.sv
+vvp pc_tb.vvp
+gtkwave pc_tb.vcd
+
+
+iverilog -g2012 -o procesor_tb.vvp ../Akumulator.sv ../ALU.sv ../ID.sv ../pamiec_data.sv ../pamiec_prog.sv ../pc.sv ../port.sv ../procesor.sv ../Rejestry.sv procesor_tb.sv
+vvp procesor_tb.vvp 
+gtkwave procesor_tb.vcd
+
+//Nowe:   (z flagami)
+iverilog -g2012 -o procesor_tb.vvp ../Akumulator.sv ../ALU.sv ../ID.sv ../pamiec_data.sv ../pamiec_prog.sv ../pc.sv ../port.sv ../procesor.sv ../Rejestry.sv ../flagi.sv procesor_tb.sv
+
+//Nowe: ze stosem
+iverilog -g2012 -o procesor_tb.vvp ../Akumulator.sv ../ALU.sv ../ID.sv ../pamiec_data.sv ../pamiec_prog.sv ../pc.sv ../port.sv ../procesor.sv ../Rejestry.sv ../flagi.sv ../stos.sv procesor_tb.sv
+
+//Nowe: z przerwaniem
+iverilog -g2012 -o procesor_tb.vvp ../Akumulator.sv ../ALU.sv ../ID.sv ../pamiec_data.sv ../pamiec_prog.sv ../pc.sv ../port.sv ../procesor.sv ../Rejestry.sv ../flagi.sv ../stos.sv ../przerwanie.sv procesor_tb.sv
+
+//Nowe: z licznikiem
+iverilog -g2012 -o procesor_tb.vvp ../Akumulator.sv ../ALU.sv ../ID.sv ../pamiec_data.sv ../pamiec_prog.sv ../pc.sv ../port.sv ../procesor.sv ../Rejestry.sv ../flagi.sv ../stos.sv ../przerwanie.sv ../licznik.sv procesor_tb.sv

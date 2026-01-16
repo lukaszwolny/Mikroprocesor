@@ -1,0 +1,82 @@
+#! /c/Source/iverilog-install/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1539-g2693dd32b)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "B:\iverilog\lib\ivl\system.vpi";
+:vpi_module "B:\iverilog\lib\ivl\vhdl_sys.vpi";
+:vpi_module "B:\iverilog\lib\ivl\vhdl_textio.vpi";
+:vpi_module "B:\iverilog\lib\ivl\v2005_math.vpi";
+:vpi_module "B:\iverilog\lib\ivl\va_math.vpi";
+:vpi_module "B:\iverilog\lib\ivl\v2009.vpi";
+S_000001ef1582aca0 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_000001ef1582ae30 .scope module, "pamiec_prog_tb" "pamiec_prog_tb" 3 7;
+ .timescale -9 -12;
+P_000001ef15683990 .param/l "ADDR_WIDTH" 1 3 9, +C4<00000000000000000000000000001000>;
+P_000001ef156839c8 .param/l "DATA_WIDTH" 1 3 10, +C4<00000000000000000000000000001111>;
+v000001ef1582bc00_0 .var "addr", 7 0;
+v000001ef1582bca0_0 .net "out", 14 0, L_000001ef1582be80;  1 drivers
+S_000001ef156b6080 .scope begin, "$ivl_for_loop0" "$ivl_for_loop0" 3 30, 3 30 0, S_000001ef1582ae30;
+ .timescale -9 -12;
+v000001ef1582b330_0 .var/2s "i", 31 0;
+S_000001ef156b6210 .scope module, "uut" "pamiec_prog" 3 20, 4 7 0, S_000001ef1582ae30;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 8 "a";
+    .port_info 1 /OUTPUT 15 "out";
+P_000001ef15683ae0 .param/l "ADDR_WIDTH" 0 4 8, +C4<00000000000000000000000000001000>;
+P_000001ef15683b18 .param/l "DATA_WIDTH" 0 4 9, +C4<00000000000000000000000000001111>;
+L_000001ef1582be80 .functor BUFZ 15, L_000001ef1582bd40, C4<000000000000000>, C4<000000000000000>, C4<000000000000000>;
+v000001ef1582b3d0 .array "ROM", 0 255, 14 0;
+v000001ef15683760_0 .net *"_ivl_0", 14 0, L_000001ef1582bd40;  1 drivers
+v000001ef156b63a0_0 .net *"_ivl_2", 9 0, L_000001ef1582bde0;  1 drivers
+L_000001ef156ff848 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
+v000001ef156b6440_0 .net *"_ivl_5", 1 0, L_000001ef156ff848;  1 drivers
+v000001ef1582bac0_0 .net "a", 7 0, v000001ef1582bc00_0;  1 drivers
+v000001ef1582bb60_0 .net "out", 14 0, L_000001ef1582be80;  alias, 1 drivers
+L_000001ef1582bd40 .array/port v000001ef1582b3d0, L_000001ef1582bde0;
+L_000001ef1582bde0 .concat [ 8 2 0 0], v000001ef1582bc00_0, L_000001ef156ff848;
+    .scope S_000001ef156b6210;
+T_0 ;
+    %vpi_call/w 4 20 "$readmemb", "../imemfile_1.mem", v000001ef1582b3d0 {0 0 0};
+    %end;
+    .thread T_0;
+    .scope S_000001ef1582ae30;
+T_1 ;
+    %vpi_call/w 3 26 "$dumpfile", "pamiec_prog_tb.vcd" {0 0 0};
+    %vpi_call/w 3 27 "$dumpvars", 32'sb00000000000000000000000000000000, S_000001ef1582ae30 {0 0 0};
+    %fork t_1, S_000001ef156b6080;
+    %jmp t_0;
+    .scope S_000001ef156b6080;
+t_1 ;
+    %pushi/vec4 0, 0, 32;
+    %store/vec4 v000001ef1582b330_0, 0, 32;
+T_1.0 ;
+    %load/vec4 v000001ef1582b330_0;
+    %cmpi/s 255, 0, 32;
+    %flag_or 5, 4;
+    %jmp/0xz T_1.1, 5;
+    %load/vec4 v000001ef1582b330_0;
+    %pad/s 8;
+    %store/vec4 v000001ef1582bc00_0, 0, 8;
+    %delay 10000, 0;
+    ; show_stmt_assign_vector: Get l-value for compressed += operand
+    %load/vec4 v000001ef1582b330_0;
+    %pushi/vec4 1, 0, 32;
+    %add;
+    %cast2;
+    %store/vec4 v000001ef1582b330_0, 0, 32;
+    %jmp T_1.0;
+T_1.1 ;
+    %end;
+    .scope S_000001ef1582ae30;
+t_0 %join;
+    %vpi_call/w 3 36 "$finish" {0 0 0};
+    %end;
+    .thread T_1;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "pamiec_prog_tb.sv";
+    "../pamiec_prog.sv";

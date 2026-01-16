@@ -1,0 +1,132 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module port #(
+      parameter Port_rozm_data = 8,
+      parameter Port_liczba = 3
+    )(
+        //Czy tutaj rozmiar danych jest potrzebny?
+    input wire clk,
+    input wire rst,
+
+    input [Port_rozm_data-1:0] dane,
+    input [$clog2(Port_liczba)-1:0] nr_P_DDRx,
+    input [$clog2(Port_liczba)-1:0] nr_P_PORTx,
+    input [$clog2(Port_liczba)-1:0] nr_P_PINx,
+    // input [1:0] nr_P_DDRx,
+    // input [1:0] nr_P_PORTx,
+    // input [1:0] nr_P_PINx,
+    input wire wr_DDRx,
+    input wire wr_PORTx,
+
+    output logic [Port_rozm_data-1:0] out,//wyjscie do ALU
+    
+     inout logic [7:0] in_out_A,//SW
+     inout logic [7:0] in_out_B,//SW
+    //inout logic [3:0] in_out_A,//SW
+    //inout logic [3:0] in_out_B,//SW
+
+    inout logic [7:0] in_out_C//diody
+    //To są fizyczne porty.
+    );  
+
+    // wire [7:0] pin_mux_A;
+    // wire [7:0] pin_mux_B;
+    // wire [7:0] pin_mux_C;
+    wire [7:0] pin_mux [2:0];
+    //modul PORT dla DDR PORT PIN
+
+    //DDR
+    logic [7:0] rejestr_DDR [2:0]; //0-A, 1-B, 2-C
+    always @( posedge clk ) begin : alwasyDDR  //always_ff
+        if(rst) begin
+            rejestr_DDR[0] <= '0;//SW
+            rejestr_DDR[1] <= '0;//SW
+            rejestr_DDR[2] <= '1;//DIODY
+        end else if(wr_DDRx) begin
+            rejestr_DDR[nr_P_DDRx] <= dane;  //8'b00000000 => 11111110
+        end
+    end
+
+    //PORT
+    logic [7:0] rejestr_PORT [2:0];
+    always @( posedge clk ) begin : alwaysPORT  ///always_ff
+        if(rst) begin
+            rejestr_PORT[0] <= '0;
+            rejestr_PORT[1] <= '0;
+            rejestr_PORT[2] <= '0;
+        end else if(wr_PORTx) begin
+            rejestr_PORT[nr_P_PORTx] <= dane;
+        end
+    end
+
+
+    //assign pin_mux[0] = (rejestr_DDR[0]) ? rejestr_PORT[0] : in_out_A;
+    assign pin_mux[0][0] = (rejestr_DDR[0][0]) ? rejestr_PORT[0][0] : in_out_A[0];
+    assign pin_mux[0][1] = (rejestr_DDR[0][1]) ? rejestr_PORT[0][1] : in_out_A[1];
+    assign pin_mux[0][2] = (rejestr_DDR[0][2]) ? rejestr_PORT[0][2] : in_out_A[2];
+    assign pin_mux[0][3] = (rejestr_DDR[0][3]) ? rejestr_PORT[0][3] : in_out_A[3];
+    assign pin_mux[0][4] = (rejestr_DDR[0][4]) ? rejestr_PORT[0][4] : in_out_A[4];
+    assign pin_mux[0][5] = (rejestr_DDR[0][5]) ? rejestr_PORT[0][5] : in_out_A[5];
+    assign pin_mux[0][6] = (rejestr_DDR[0][6]) ? rejestr_PORT[0][6] : in_out_A[6];
+    assign pin_mux[0][7] = (rejestr_DDR[0][7]) ? rejestr_PORT[0][7] : in_out_A[7];
+
+    //assign pin_mux[1] = (rejestr_DDR[1]) ? rejestr_PORT[1] : in_out_B;
+    assign pin_mux[1][0] = (rejestr_DDR[1][0]) ? rejestr_PORT[1][0] : in_out_B[0];
+    assign pin_mux[1][1] = (rejestr_DDR[1][1]) ? rejestr_PORT[1][1] : in_out_B[1];
+    assign pin_mux[1][2] = (rejestr_DDR[1][2]) ? rejestr_PORT[1][2] : in_out_B[2];
+    assign pin_mux[1][3] = (rejestr_DDR[1][3]) ? rejestr_PORT[1][3] : in_out_B[3];
+    assign pin_mux[1][4] = (rejestr_DDR[1][4]) ? rejestr_PORT[1][4] : in_out_B[4];
+    assign pin_mux[1][5] = (rejestr_DDR[1][5]) ? rejestr_PORT[1][5] : in_out_B[5];
+    assign pin_mux[1][6] = (rejestr_DDR[1][6]) ? rejestr_PORT[1][6] : in_out_B[6];
+    assign pin_mux[1][7] = (rejestr_DDR[1][7]) ? rejestr_PORT[1][7] : in_out_B[7];
+    
+    //assign pin_mux[2] = (rejestr_DDR[2]) ? rejestr_PORT[2] : in_out_C;
+    assign pin_mux[2][0] = (rejestr_DDR[2][0]) ? rejestr_PORT[2][0] : in_out_C[0];
+    assign pin_mux[2][1] = (rejestr_DDR[2][1]) ? rejestr_PORT[2][1] : in_out_C[1];
+    assign pin_mux[2][2] = (rejestr_DDR[2][2]) ? rejestr_PORT[2][2] : in_out_C[2];
+    assign pin_mux[2][3] = (rejestr_DDR[2][3]) ? rejestr_PORT[2][3] : in_out_C[3];
+    assign pin_mux[2][4] = (rejestr_DDR[2][4]) ? rejestr_PORT[2][4] : in_out_C[4];
+    assign pin_mux[2][5] = (rejestr_DDR[2][5]) ? rejestr_PORT[2][5] : in_out_C[5];
+    assign pin_mux[2][6] = (rejestr_DDR[2][6]) ? rejestr_PORT[2][6] : in_out_C[6];
+    assign pin_mux[2][7] = (rejestr_DDR[2][7]) ? rejestr_PORT[2][7] : in_out_C[7];
+
+    //wyjscie - do procka
+    assign out = pin_mux[nr_P_PINx];
+
+    //Fizyczne piny
+
+    //assign in_out_A = (rejestr_DDR[0]) ? rejestr_PORT[0] : 'z;
+    assign in_out_A[0] = (rejestr_DDR[0][0]) ? rejestr_PORT[0][0] : 'z;
+    assign in_out_A[1] = (rejestr_DDR[0][1]) ? rejestr_PORT[0][1] : 'z;
+    assign in_out_A[2] = (rejestr_DDR[0][2]) ? rejestr_PORT[0][2] : 'z;
+    assign in_out_A[3] = (rejestr_DDR[0][3]) ? rejestr_PORT[0][3] : 'z;
+    assign in_out_A[4] = (rejestr_DDR[0][4]) ? rejestr_PORT[0][4] : 'z;
+    assign in_out_A[5] = (rejestr_DDR[0][5]) ? rejestr_PORT[0][5] : 'z;
+    assign in_out_A[6] = (rejestr_DDR[0][6]) ? rejestr_PORT[0][6] : 'z;
+    assign in_out_A[7] = (rejestr_DDR[0][7]) ? rejestr_PORT[0][7] : 'z;
+
+    //assign in_out_B = (rejestr_DDR[1]) ? rejestr_PORT[1] : 'z;
+    assign in_out_B[0] = (rejestr_DDR[1][0]) ? rejestr_PORT[1][0] : 'z;
+    assign in_out_B[1] = (rejestr_DDR[1][1]) ? rejestr_PORT[1][1] : 'z;
+    assign in_out_B[2] = (rejestr_DDR[1][2]) ? rejestr_PORT[1][2] : 'z;
+    assign in_out_B[3] = (rejestr_DDR[1][3]) ? rejestr_PORT[1][3] : 'z;
+    assign in_out_B[4] = (rejestr_DDR[1][4]) ? rejestr_PORT[1][4] : 'z;
+    assign in_out_B[5] = (rejestr_DDR[1][5]) ? rejestr_PORT[1][5] : 'z;
+    assign in_out_B[6] = (rejestr_DDR[1][6]) ? rejestr_PORT[1][6] : 'z;
+    assign in_out_B[7] = (rejestr_DDR[1][7]) ? rejestr_PORT[1][7] : 'z;
+
+    //assign in_out_C = (rejestr_DDR[2]) ? rejestr_PORT[2] : 'z;
+    assign in_out_C[0] = (rejestr_DDR[2][0]) ? rejestr_PORT[2][0] : 'z;
+    assign in_out_C[1] = (rejestr_DDR[2][1]) ? rejestr_PORT[2][1] : 'z;
+    assign in_out_C[2] = (rejestr_DDR[2][2]) ? rejestr_PORT[2][2] : 'z;
+    assign in_out_C[3] = (rejestr_DDR[2][3]) ? rejestr_PORT[2][3] : 'z;
+    assign in_out_C[4] = (rejestr_DDR[2][4]) ? rejestr_PORT[2][4] : 'z;
+    assign in_out_C[5] = (rejestr_DDR[2][5]) ? rejestr_PORT[2][5] : 'z;
+    assign in_out_C[6] = (rejestr_DDR[2][6]) ? rejestr_PORT[2][6] : 'z;
+    assign in_out_C[7] = (rejestr_DDR[2][7]) ? rejestr_PORT[2][7] : 'z;
+
+endmodule
