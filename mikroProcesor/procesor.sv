@@ -1,31 +1,15 @@
 `timescale 1ns / 10ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 09.10.2025 17:23:57
-// Design Name: 
-// Module Name: procesor
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 /*
-0x00 JMP main
-0x02 przerwanie ext
-0x04 przerwanie licznik
-0x06 wyjatkek(jeden wspolny) od stosu _ error ( tu bedzie skok gdzies i tam bedzie petla bez wyjscia + np dioda ERROR (osobne wyj z procka))
-0x06 main:
+    Procesor.
+
+    0x00 JMP main
+    0x02 przerwanie ext
+    0x04 przerwanie licznik
+    0x06 wyjatkek(jeden wspolny) od stosu _ error ( tu bedzie skok gdzies i tam bedzie petla bez wyjscia + np dioda ERROR (osobne wyj z procka))
+    0x06 main:
 */
+//////////////////////////////////////////////////////////////////////////////////
 
 module procesor(
     input wire clk,
@@ -39,23 +23,22 @@ module procesor(
 
     //Na labach (plytka Intela) przycisk aktywny stanem 0!! - UWAGA na TB - tam tez to zmienic rst
     //quartus
-    inout [7:0] SW_A, //przyciski 
-    inout [7:0] SW_B, //przyciski 
-
-    inout [7:0] LED //8 diody
+    // inout [7:0] SW_A, //przyciski 
+    // inout [7:0] SW_B, //przyciski 
+    // inout [7:0] LED //8 diody
 
     //Dioda do oznaczanie ERROR jako wyjatek ze stosu -
     //outout logic dioda_error // i w procesor.sv bedzie zapamietywany stan z ID(jak error ze stosem bedzie) i wystawiany na diode(zapali sie)
     
-    // inout logic [7:0] in_out_A,//SW 
-    // inout logic [7:0] in_out_B,//SW
-    // inout logic [7:0] in_out_C//diody
+    inout logic [7:0] in_out_A,//SW 
+    inout logic [7:0] in_out_B,//SW, albo przycisk
+    inout logic [7:0] in_out_C//diody
 
     );
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    //parametry - rozmiar pamieci itp..
+    //parametry
 
-    localparam P_PROG_data = 16;//15bit ROZKAZ.  16 - czesc2
+    localparam P_PROG_data = 16;//16bit ROZKAZ
     localparam P_PROG_addres = 8;//adres 2^8=256komórek po 15bitow.
     //Rejestry
     localparam P_Rx_ILE = 8; //ile tych rejestrow
@@ -65,24 +48,24 @@ module procesor(
     localparam P_MEM_address = 8;
 
     //Porty - liczba A,B,C,...
-    localparam P_PORT_liczba = 3;
+    // localparam P_PORT_liczba = 3;//BEZ TEGO. 3 PORTY POPROSTU
 
     //Stos - wielkosc
     localparam P_STOS_depth = 32;
 
     //pamiec DANYCH - strony.
-    localparam DATA_szerokosc_strony = 4;//strona
+    localparam DATA_szerokosc_strony = 4;//ile stron
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    //sygnaly miedzy tymi elementami
+    //sygnaly miedzy elementami
+
     wire pc_rst;
     wire [P_PROG_addres-1:0] pc_licznik;
     wire [P_PROG_data-1:0] rozkaz;
     wire [P_PROG_addres-1:0] address;
     wire [$clog2(P_Rx_ILE)-1:0] numer_Rx;
-    wire [P_PROC_data-1:0] stala_zmienna;//IM -- to jest tez jako dana.
-    wire [1:0] nr_DDRx;//nr_P_DDRx
+    wire [P_PROC_data-1:0] stala_zmienna;
+    wire [1:0] nr_DDRx;
     wire [1:0] nr_PORTx;
     wire [1:0] nr_PINx;
     wire wr_Rx;
@@ -110,10 +93,10 @@ module procesor(
     wire [P_PROC_data-1:0] out_alu;
     
     //flagi
-    wire carry;//do ALU i do ID też
-    wire znak_S, parzystosc_P, zero_Z, nadmiar_OV, przepelnienie_C;//miedzyu ALU a falgami
-    wire ID_S, ID_P, ID_Z, ID_OV;//miedzy flagami a ID
-    wire ID_C_OV_en;//en z ID
+    wire carry;
+    wire znak_S, parzystosc_P, zero_Z, nadmiar_OV, przepelnienie_C;
+    wire ID_S, ID_P, ID_Z, ID_OV;
+    wire ID_C_OV_en;
     wire ID_C_OV_kasowanie;
 
     //stos
@@ -128,13 +111,13 @@ module procesor(
     wire stos_pc_pop;
     wire stos_pc_empty;
     wire stos_pc_full;
-    wire [P_PROG_addres-1:0] stos_pc_data;//dane ( ze STOSU )
+    wire [P_PROG_addres-1:0] stos_pc_data;//dane ( ze STOSU pc )
 
     //przerwanie
     wire przerwanie_on;
     wire przerwanie_off;
     wire [7:0] przerwanie_wektor;
-    wire przerw; //przerwanie
+    wire przerw;//przerwanie
 
     //Licznik
     wire [7:0] wartosc_do_licznika;
@@ -181,10 +164,9 @@ module procesor(
     );
 
     //ID - dekoder instrukcji
-    //parametry spoko - i tak zmienic w samym rozkazie.
     ID #( .I_WIDTH(P_PROG_data),
           .ID_rozm_dana(P_PROC_data),
-          .ID_rozm_adres(P_MEM_address)//ile adresu dla pamieci danych
+          .ID_rozm_adres(P_MEM_address)
     ) u_ID(
         .rozkaz(rozkaz),
         .nr_Rx(numer_Rx),
@@ -231,14 +213,16 @@ module procesor(
         .ID_flaga_clear_licznik(flaga_clear_licznik),
         .ID_flaga_licznik(flaga_licznik)
     );
+
     //pamiec ROM do programu
     pamiec_prog #(
-        .ADDR_WIDTH(P_PROG_addres), //8
-        .DATA_WIDTH(P_PROG_data) //16
+        .ADDR_WIDTH(P_PROG_addres),
+        .DATA_WIDTH(P_PROG_data)
     ) u_pamiec_prog (
         .a(pc_licznik),
         .out(rozkaz)
     );
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +256,6 @@ module procesor(
         .licznik_flaga_clear(flaga_clear_licznik)
     );
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,9 +264,9 @@ module procesor(
     // Duzy MUX, rejestry, pamiec danych, port, stos, (+ dana natychmiastowa).
     //--------
 
-        //MUX ten duzy:
+    //MUX ten duzy:
     logic [P_PROC_data-1:0] mux_I_R_M_P;
-    always @(*) begin : always_MUX_IM_Rx_MEM_PORT //always_comb
+    always_comb begin : always_MUX_IM_Rx_MEM_PORT //always_comb    always @(*) begin :
         case(MUX_im_rx_mem_port)
             3'b000: mux_I_R_M_P = stala_zmienna;//zmienna
             3'b001: mux_I_R_M_P = out_Rx;//z Rx
@@ -293,6 +276,7 @@ module procesor(
             default: mux_I_R_M_P = '0;
         endcase
     end
+
     //MUX addres:
     wire [7:0] address_wybor; //albo z adres albo z Rx(posrednie)
     assign address_wybor = (mux_address) ? out_Rx : address;
@@ -309,7 +293,8 @@ module procesor(
         .dane(data),
         .out(out_Rx)
     );
-    //pamiec danych RAM
+
+    //pamiec danych
     pamiec_data #(
       .ADDR_WIDTH_MEM(P_MEM_address),
       .DATA_WIDTH_MEM(P_PROC_data),
@@ -322,10 +307,11 @@ module procesor(
         .dane(data),
         .out(out_MEM)
     );
+
     //Porty
     port #(
-      .Port_rozm_data(P_PROC_data),
-      .Port_liczba(P_PORT_liczba)
+      .Port_rozm_data(P_PROC_data)
+      //.Port_liczba(P_PORT_liczba)
     ) u_port(
         .clk(clk),
         .rst(~button_c),
@@ -336,15 +322,15 @@ module procesor(
         .wr_DDRx(wr_DDRx),
         .wr_PORTx(wr_PORTx),
         .out(out_Port),
-        .in_out_A(SW_A),//SW   SW[3:0]
-        .in_out_B(SW_B),//SW   SW[7:4]
-        .in_out_C(LED)//Diody
+        .in_out_A(in_out_A),//port A
+        .in_out_B(in_out_B),//port B
+        .in_out_C(in_out_C)// port C
     );
 
-        //Stos - dla DANYCH
+    //Stos - dla DANYCH
     stos #(
         .STOS_data_rozm(P_PROC_data),
-        .STOS_Rozm(5)//P_STOS_depth
+        .STOS_Rozm(P_STOS_depth)
     ) u_stos(
         .clk(clk),
         .rst(~button_c),
@@ -356,7 +342,6 @@ module procesor(
         .empty(stos_empty)
     );
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,22 +350,22 @@ module procesor(
     // ALU, Acc, Flagi
     //--------
 
-    //ALU - operacje 
+    //ALU
     ALU #(
       .ALU_rozm_data(P_PROC_data)
     ) u_alu(
-        .a(data),//z A
-        .b(mux_I_R_M_P), //mux_I_R_M_P
+        .a(data),
+        .b(mux_I_R_M_P),
         .alu_op(alu_op),
         .out(out_alu),
-        .C_in(carry),//in
-        .P(parzystosc_P),//out
-        .Z(zero_Z),//out
-        .S(znak_S),//out
-        .C(przepelnienie_C),//out
-        .OV(nadmiar_OV)//outppuy
-
+        .C_in(carry),
+        .P(parzystosc_P),
+        .Z(zero_Z),
+        .S(znak_S),
+        .C(przepelnienie_C),
+        .OV(nadmiar_OV)
     );
+
     //A
     Akumulator #(
       .ALU_rozm_data(P_PROC_data)
@@ -399,18 +384,17 @@ module procesor(
       .flagi_en(a_ce),
       .C_OV_en(ID_C_OV_en),
       .C_OV_kasowanie(ID_C_OV_kasowanie),
-      .C_in(przepelnienie_C),//z ALU
+      .C_in(przepelnienie_C),
       .OV_in(nadmiar_OV),
       .P_in(parzystosc_P),
       .Z_in(zero_Z),
       .S_in(znak_S),
-      .C_out(carry),//wartosc do ALU (C), no ale tez do ID
-      .OV_out(ID_OV),//do ID w celu skokow warunkowych
+      .C_out(carry),
+      .OV_out(ID_OV),
       .P_out(ID_P),
       .Z_out(ID_Z),
       .S_out(ID_S)
     );
-
 
     //////////////////////////////////////////////////////////////////////////////////
 

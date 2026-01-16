@@ -1,41 +1,35 @@
-//////////////////////////
-//Przerwanie bez masek i priorytet ma zewnetrzne przerwanie nad licznikiem
-
-//////////////////////////
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+/*
+    Przerwanie.
+    
+    Interrupt Controller
+    Przerwanie bez masek i priorytet ma zewnetrzne przerwanie nad licznikiem
+    To idzie najpierw do ID a potem do pc z ID idzie
+*/
+//////////////////////////////////////////////////////////////////////////////////
 
 module przerwanie(
     input wire clk,
     input wire rst,
-
-    //enable, disable .. z ID
     input wire int_enable,//sei  + RETI
     input wire int_disable,//cli
-
-    //zrodla
     input wire ext_int,//zewnetrzne przerwanie .. przycisk
     input wire timer_int,//wewnetrzne przerwanie z licznika
     output logic [7:0] int_vector, //wektor przerwania
-
     output logic przerwanie
 );
 
-//rejestr
-//rejestr na wejsciu od ext_int sygnalizuje ze pojawilo sie zbocze np i RETI to resetuje dopiero
-logic przerwanie_en;//SREG
-
+logic przerwanie_en;
 logic ext_int_prev;//do wykrycia zbocza
 logic timer_int_prev;
 logic int_a; // przerwanie przycisk
 logic int_b; //przerwanie timer
 
-//Interrupt Controller
-/* To idzie najpierw do ID a potem do pc z ID idzie   */
-
-always @(posedge clk) begin
+always_ff @(posedge clk) begin    //always_ff
     if(rst) begin
         przerwanie_en <= '0;
         przerwanie <= '0;
-        //ext_int_en <= '0;//domyslnie nie ma przerwania
         ext_int_prev <= '0;
         timer_int_prev <= '0;
         int_a <= '0;

@@ -1,8 +1,10 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
+/*
+    pc.
 
+*/
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module pc
     #(
@@ -10,19 +12,16 @@ module pc
     )(
         input wire clk,
         input wire rst,
-        //input wire ID_ink,//TO bezsensu
         input wire ID_rst,
         input wire skok_pc,
         input wire skok_pc_stos,
         input wire [7:0] adres_skok_pc, // z rozkazu
         input wire [7:0] adres_skok_pc_stos, // ze stosu
         output logic [W-1:0] PC_count,
-        //z przerwania zeby nie bylo + 1'b1; bo dla call jest ok
         input wire reti_int_en // jak reti to int_en jest + skok_pc i skok_pc_stos i wtedy bez +1
     );
 
-
-    always @( posedge clk ) begin : LicznikRozkazow  //always_ff
+    always_ff @( posedge clk ) begin : LicznikRozkazow  //always_ff  always @( posedge clk )
         if(rst || ID_rst) PC_count <= '0;
         else if(skok_pc) begin   /*if(ID_ink)*/ 
             if(skok_pc_stos) begin

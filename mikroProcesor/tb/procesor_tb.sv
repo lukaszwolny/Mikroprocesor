@@ -46,11 +46,22 @@ module procesor_tb;
         .clk(clk),
         //.BTND(clk),//DO testow
         .button_c(rst),
-        .SW_A(SW1),
-        .SW_B(SW2),
-        .LED(LED),
+        .in_out_A(SW1),
+        .in_out_B(SW2),
+        .in_out_C(LED),
         .przerwanie_zewnetrzne(ext_przerwanie)
     );  
+
+
+    // procesor u_procesor(
+    //     .clk(clk),
+    //     //.BTND(clk),//DO testow
+    //     .button_c(rst),
+    //     .SW_A(SW1),
+    //     .SW_B(SW2),
+    //     .LED(LED),
+    //     .przerwanie_zewnetrzne(ext_przerwanie)
+    // );  
 
 
     initial clk = 1;

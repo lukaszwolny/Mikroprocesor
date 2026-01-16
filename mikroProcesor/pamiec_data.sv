@@ -1,29 +1,20 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 19.10.2025 13:09:05
-// Design Name: 
-// Module Name: pamiec_data
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
+/*
+    Pamiec Danych + Stronnicowanie.
+
+    Stronnicowanie.
+    pod adresem 255 wpisywany nr strony. czyli pamiec 0-254 dostepnych x ilosc stron
+    
+    1<<ADDR_WIDTH 1 przesuniete w lewo o 8. czyli 2^8.
+*/
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module pamiec_data #(
-        parameter ADDR_WIDTH_MEM = 8, //adres
-        parameter DATA_WIDTH_MEM = 8, //dane
-        parameter DATA_WIDTH_STRONY = 4//strona
+        parameter ADDR_WIDTH_MEM = 8,
+        parameter DATA_WIDTH_MEM = 8,
+        parameter DATA_WIDTH_STRONY = 4
     )
     (
     input wire clk,
@@ -41,11 +32,10 @@ module pamiec_data #(
     //rejestr stron
     logic [DATA_WIDTH_STRONY-1:0] strona;  //4 bity -> 16 stron
 
-    // 1<<ADDR_WIDTH 1 przesuniete w lewo o 8. czyli 2^8.
-    logic [DATA_WIDTH_MEM-1:0] mem [0:MEM_SIZE_Fizycznie-1]; //256 komorek po 8bit.
+    logic [DATA_WIDTH_MEM-1:0] mem [0:MEM_SIZE_Fizycznie-1];
 
     //Bez resetu
-    always @( posedge clk) begin : always_mem //always_ff
+    always_ff @( posedge clk) begin : always_mem //always_ff   always
         if(rst) strona <= '0;
         else begin
             if(wr_mem) begin

@@ -1,24 +1,25 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
+/*
+    Port.
 
+*/
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module port #(
-      parameter Port_rozm_data = 8,
-      parameter Port_liczba = 3
+      parameter Port_rozm_data = 8
+      //parameter Port_liczba = 3
     )(
-        //Czy tutaj rozmiar danych jest potrzebny?
     input wire clk,
     input wire rst,
-
     input [Port_rozm_data-1:0] dane,
-    input [$clog2(Port_liczba)-1:0] nr_P_DDRx,
-    input [$clog2(Port_liczba)-1:0] nr_P_PORTx,
-    input [$clog2(Port_liczba)-1:0] nr_P_PINx,
-    // input [1:0] nr_P_DDRx,
-    // input [1:0] nr_P_PORTx,
-    // input [1:0] nr_P_PINx,
+    input [1:0] nr_P_DDRx,
+    input [1:0] nr_P_PORTx,
+    input [1:0] nr_P_PINx,
+    // input [$clog2(Port_liczba)-1:0] nr_P_DDRx,
+    // input [$clog2(Port_liczba)-1:0] nr_P_PORTx,
+    // input [$clog2(Port_liczba)-1:0] nr_P_PINx,
     input wire wr_DDRx,
     input wire wr_PORTx,
 
@@ -28,20 +29,14 @@ module port #(
      inout logic [7:0] in_out_B,//SW
     //inout logic [3:0] in_out_A,//SW
     //inout logic [3:0] in_out_B,//SW
-
     inout logic [7:0] in_out_C//diody
-    //To są fizyczne porty.
     );  
 
-    // wire [7:0] pin_mux_A;
-    // wire [7:0] pin_mux_B;
-    // wire [7:0] pin_mux_C;
     wire [7:0] pin_mux [2:0];
-    //modul PORT dla DDR PORT PIN
 
     //DDR
     logic [7:0] rejestr_DDR [2:0]; //0-A, 1-B, 2-C
-    always @( posedge clk ) begin : alwasyDDR  //always_ff
+    always_ff @(posedge clk) begin : alwasyDDR  //always_ff   always @( posedge clk )
         if(rst) begin
             rejestr_DDR[0] <= '0;//SW
             rejestr_DDR[1] <= '0;//SW
@@ -53,7 +48,7 @@ module port #(
 
     //PORT
     logic [7:0] rejestr_PORT [2:0];
-    always @( posedge clk ) begin : alwaysPORT  ///always_ff
+    always_ff @(posedge clk) begin : alwaysPORT  ///always_ff   always @( posedge clk ) 
         if(rst) begin
             rejestr_PORT[0] <= '0;
             rejestr_PORT[1] <= '0;

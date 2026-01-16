@@ -1,80 +1,80 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
+/*
+    Dekoder rozkazow.
 
+
+*/
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module ID#(
-    parameter I_WIDTH = 16,
-    parameter ID_rozm_dana = 8,
-    parameter ID_rozm_adres = 8
+        parameter I_WIDTH = 16,
+        parameter ID_rozm_dana = 8,
+        parameter ID_rozm_adres = 8
     )
     (
-    input wire [I_WIDTH-1:0] rozkaz,
+        input wire [I_WIDTH-1:0] rozkaz,
 
-    //Zamieniec to potem z parametrami: Rx itp
-    output logic [2:0] nr_Rx,
-    output logic [ID_rozm_adres-1:0] adres,
-    output logic [ID_rozm_dana-1:0] wartosc_IM,
-    output logic [1:0] nr_P_DDRx,//trzy porty SW SW LED
-    output logic [1:0] nr_P_PORTx,//
-    output logic [1:0] nr_P_PINx,//
-    //sterujace
-    output logic ID_rst,//albo jako zapisz wartosc do PC(czyli tez 0)
-    output logic wr_Rx,// do Rx
-    output logic MUX_adres,//adres albo Rx(posrednie adresowanie) do MEM
-    output logic wr_MEM,
-    output logic wr_DDRx,
-    output logic wr_PORTx,
-    output logic [2:0] MUX_IM_Rx_MEM_PORT,//4 do wyboru
-    output logic A_ce,//
-    //ALU???? sterujace - 
-    output logic [3:0] ALU_op,//operacje do alu
+        output logic [2:0] nr_Rx,
+        output logic [ID_rozm_adres-1:0] adres,
+        output logic [ID_rozm_dana-1:0] wartosc_IM,
+        output logic [1:0] nr_P_DDRx,
+        output logic [1:0] nr_P_PORTx,
+        output logic [1:0] nr_P_PINx,
 
-    //pc skoki
-    output logic skok_ID,
-    output logic [7:0] adres_skok_ID,
+        //sterujace
+        output logic ID_rst,
+        output logic wr_Rx,// do Rx
+        output logic MUX_adres,//adres albo Rx(posrednie adresowanie) do MEM
+        output logic wr_MEM,
+        output logic wr_DDRx,
+        output logic wr_PORTx,
+        output logic [2:0] MUX_IM_Rx_MEM_PORT,
+        output logic A_ce,
+        output logic [3:0] ALU_op,//operacje do alu
 
-    //flagi
-    output logic C_OV_en,
-    input wire P_in, OV_in, Z_in, S_in, C_in,
-    output logic C_OV_kasowanie,
-    output logic flagi_en, // .
+        //pc skoki
+        output logic skok_ID,
+        output logic [7:0] adres_skok_ID,
 
-    //Stos
-    output logic ID_push,
-    output logic ID_pop,
-    input wire ID_stos_empty,
-    input wire ID_stos_full,
+        //flagi
+        output logic C_OV_en,
+        input wire P_in, OV_in, Z_in, S_in, C_in,
+        output logic C_OV_kasowanie,
+        output logic flagi_en,
 
-    //pc - stos
-    output logic ID_push_pc,
-    output logic ID_pop_pc,
-    input wire ID_stos_pc_empty,
-    input wire ID_stos_pc_full,
-    output logic skok_pc_ID,
+        //Stos
+        output logic ID_push,
+        output logic ID_pop,
+        input wire ID_stos_empty,
+        input wire ID_stos_full,
 
-    //przerwanie
-    output logic int_en,
-    output logic int_dis,
-    input wire [7:0] int_vec,
-    input wire jest_przerwanie,
+        //pc - stos
+        output logic ID_push_pc,
+        output logic ID_pop_pc,
+        input wire ID_stos_pc_empty,
+        input wire ID_stos_pc_full,
+        output logic skok_pc_ID,
 
-    //licznik
-    output logic [7:0] licznik_wartosc,
-    output logic ID_zapisz_L,
-    output logic ID_zapisz_H,
-    output logic ID_zapisz_control,
-    output logic ID_flaga_clear_licznik,
-    input wire ID_flaga_licznik
+        //przerwanie
+        output logic int_en,
+        output logic int_dis,
+        input wire [7:0] int_vec,
+        input wire jest_przerwanie,
 
+        //licznik
+        output logic [7:0] licznik_wartosc,
+        output logic ID_zapisz_L,
+        output logic ID_zapisz_H,
+        output logic ID_zapisz_control,
+        output logic ID_flaga_clear_licznik,
+        input wire ID_flaga_licznik
     );
 
     logic [4:0] instrukcja;
-    //logic [2:0] opcode2;
 
-    always @(*)  begin : ID_always   //always_comb
-        instrukcja = rozkaz[15:11]; //powiekszone
+    always @(*)  begin : ID_always   //always_comb   always @(*)  begin : ID_always
+        instrukcja = rozkaz[15:11]; 
         
         nr_Rx = '0;
         adres = '0;
@@ -85,7 +85,7 @@ module ID#(
 
         ID_rst = '0;
         wr_Rx = '0;
-        MUX_adres = '0;//0 adres 1-Rx
+        MUX_adres = '0;
         wr_MEM = '0;
         wr_DDRx = '0;
         wr_PORTx = '0;
@@ -114,14 +114,14 @@ module ID#(
         ID_zapisz_control = '0;
         ID_flaga_clear_licznik = '0;
 
-        //taki priorytet tez
+        //Najpierw przerwanie
         if(jest_przerwanie) begin
             int_dis = '1;//off  + zapis na stos + zapis pc wketor przerwaia
             skok_ID = '1;
             ID_push_pc = '1;
             adres_skok_ID = int_vec;
             skok_pc_ID = '0;
-        end else begin
+        end else begin //normalne dekodowanie
             //--------
             //case
             case(instrukcja)
@@ -139,7 +139,6 @@ module ID#(
                             MUX_IM_Rx_MEM_PORT = 3'b010;//2
                             ALU_op = rozkaz[15:12];
                             A_ce = '1;
-                            
                         end
                         3'b001: begin
                             //Rx
@@ -147,7 +146,6 @@ module ID#(
                             MUX_IM_Rx_MEM_PORT = 3'b001;//1
                             ALU_op = rozkaz[15:12];
                             A_ce = '1;
-
                         end
                         3'b010: begin
                             //PINx
@@ -155,7 +153,6 @@ module ID#(
                             MUX_IM_Rx_MEM_PORT = 3'b011;//3
                             ALU_op = rozkaz[15:12];
                             A_ce = '1;
-
                         end
                         3'b011: begin
                             //IM - zmienna
@@ -163,7 +160,6 @@ module ID#(
                             MUX_IM_Rx_MEM_PORT = 3'b000;//0
                             ALU_op = rozkaz[15:12];
                             A_ce = '1;
-
                         end
                         3'b100: begin
                             //@Rx
@@ -172,7 +168,6 @@ module ID#(
                             MUX_IM_Rx_MEM_PORT = 3'b010;//2
                             ALU_op = rozkaz[15:12];
                             A_ce = '1;
-
                         end
                     endcase
                 end
@@ -192,25 +187,21 @@ module ID#(
                             wr_MEM = '1;
                             MUX_adres = '0;
                             adres = rozkaz[7:0];
-                            
                         end
                         2'b01: begin
                             //Rx
                             wr_Rx = '1;
                             nr_Rx = rozkaz[2:0];
-                            
                         end
                         2'b10: begin
                             //PORTx
                             wr_PORTx = '1;
                             nr_P_PORTx = rozkaz[1:0];
-                            
                         end
                         2'b11: begin
                             //DDRx
                             wr_DDRx = '1;
                             nr_P_DDRx = rozkaz[1:0];
-                            
                         end
                     endcase
                 end
@@ -372,20 +363,20 @@ module ID#(
                     C_OV_en = '1;                
                 end
                 5'b10100: begin
-                    //PUSH        ---------   STOS <- ACC
+                    //PUSH  STOS <- ACC
                     if(ID_stos_full) begin
-                        //wyjatek od przpelnienia - skok gdzies
+                        //wyjatek od przpelnienia
                         skok_ID = '1;
-                        adres_skok_ID = 8'b11111100; // na sztywno okreslone
+                        adres_skok_ID = 8'b00000110; // 0x06 wyjatek
                     end else begin
                         ID_push = '1;
                     end
                 end
                 5'b10101: begin
-                    //POP          ---------   ACC <- STOS
+                    //POP  ACC <- STOS
                     if(ID_stos_empty) begin
                         skok_ID = '1;
-                        adres_skok_ID = 8'b11111100; // na sztywno okreslone
+                        adres_skok_ID = 8'b00000110; // 0x06 wyjatek
                     end else begin
                         ID_pop = '1;
                         ALU_op = '0;
@@ -397,7 +388,7 @@ module ID#(
                     //CALL
                     if(ID_stos_pc_full) begin
                         skok_ID = '1;
-                        adres_skok_ID = 8'b11111100; // na sztywno okreslone
+                        adres_skok_ID = 8'b00000110; // 0x06 wyjatek
                     end else begin
                         skok_ID = '1;
                         ID_push_pc = '1;
@@ -409,18 +400,16 @@ module ID#(
                     //RET
                     if(ID_stos_pc_empty) begin
                         skok_ID = '1;
-                        adres_skok_ID = 8'b11111100; // na sztywno okreslone
+                        adres_skok_ID = 8'b00000110; // 0x06 wyjatek
                     end else begin
                         ID_pop_pc = '1;
                         skok_ID = '1;
                         skok_pc_ID = '1;
                     end
                 end
-
                 default: ;
             endcase        
         end //end else if 
-
     end
 
 endmodule

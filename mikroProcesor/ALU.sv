@@ -1,6 +1,9 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
+/*
+    ALU.
 
+*/
 //////////////////////////////////////////////////////////////////////////////////
 
 module ALU #(
@@ -8,11 +11,11 @@ module ALU #(
 )(
     input wire [ALU_rozm_data-1:0] a,
     input wire [ALU_rozm_data-1:0] b,
-    input wire [3:0] alu_op,//Tyle ile jest operacji to tyle
+    input wire [3:0] alu_op,
 
     output logic [ALU_rozm_data-1:0] out,
 
-    input wire C_in,//Carry out z poprzedniego
+    input wire C_in,
     
     output wire P, Z, S,
     output wire C, OV
@@ -20,7 +23,7 @@ module ALU #(
 
     logic carry;
 
-    always @(*)  begin : blockName  //always_comb
+    always_comb begin : blockName  //always_comb  always @(*) 
         carry = 0;
         case(alu_op)
         4'b0000: begin

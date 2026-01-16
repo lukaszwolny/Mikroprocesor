@@ -1,8 +1,10 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-//Komb
+/*
+    Pamiec Programu.
+    
+*/
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module pamiec_prog#(
         parameter ADDR_WIDTH = 8,
@@ -18,7 +20,6 @@ module pamiec_prog#(
     initial begin
         //inicjalizacja pamieci
         $readmemb("../mem/imemfile_11.mem",ROM);//imemfile_1.mem
-        //$readmemb("/home/student/mikroProcki_25/imemfile_1.mem",ROM);//imemfile_1.mem
     end 
 
     assign out = ROM[a];
