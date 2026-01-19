@@ -38,6 +38,8 @@ module procesor_tb;
     assign SW1 = SW_A;
     assign SW2 = SW_B;
 
+    logic dioda_error;
+
     //inout [7:0] SW_A;//mlodsze
     //inout [7:0] SW_B;//starsze
     //logic [7:0] LED;
@@ -49,7 +51,8 @@ module procesor_tb;
         .in_out_A(SW1),
         .in_out_B(SW2),
         .in_out_C(LED),
-        .przerwanie_zewnetrzne(ext_przerwanie)
+        .przerwanie_zewnetrzne(ext_przerwanie),
+        .dioda_error(dioda_error)
     );  
 
 
@@ -86,7 +89,13 @@ module procesor_tb;
 
             //przerwanie
             //to przerwanie dla prog 9 np w momencie adres 15 jest zapis ale pojawias ie przerwanie i po przerwaniu jeszcze raz 15 sie wykonuje juz poprawnie. (odwrotnie jak dla CALL)
+            /*#70;
+            ext_przerwanie = 1;
+            #50;
+            ext_przerwanie = 0;*/
             #70;
+            ext_przerwanie = 0;
+            #60;
             ext_przerwanie = 1;
             #50;
             ext_przerwanie = 0;
@@ -1035,5 +1044,77 @@ pop  //przywroc acc
 10101 000 00000000
 RETI
 11010 000 00000000
+
+*/
+
+
+/*
+//12
+TEST diody error
+
+Dla stosu N=5
+
+3.
+00001 011 00001010 LD   #8'h0A
+10100 000 00000000  push
+00001 011 00001011 LD   #8'h0B
+10100 000 00000000  push
+00001 011 00001100 LD   #8'h0C
+10100 000 00000000  push
+00001 011 00001100 LD   #8'h0D
+10100 000 00000000  push
+00001 011 00001100 LD   #8'h0E
+10100 000 00000000  push
+00001 011 00001100 LD   #8'hFF
+10100 000 00000000  push
+10101 000 00000000  pop
+10101 000 00000000  pop
+10101 000 00000000  pop
+10101 000 00000000  pop
+10101 000 00000000  pop
+
+
+JMP main
+00100 000 00000110   //pod 6 jest main
+000000000 (nic)
+00000 000 00000000
+ext_przerw: JMP przerwanie_1 (pod adresem 200)
+00100 000 11001000
+000000000 (nic)
+00000 000 00000000
+licznik_przerw: JMP przerwanie_2 (pod adresem 220)
+00100 000 11011100
+000000000000 (nic)
+00000 000 00000000
+main: sei
+
+00100 000 00000110
+00000 000 00000000
+00100 000 11001000
+00000 000 00000000
+00100 000 11011100
+000000000000
+00100 000 00000110
+00000 000 00000000
+
+0000101100001010 
+1010000000000000 
+0000101100001011 
+1010000000000000 
+0000101100001100 
+1010000000000000 
+0000101100001101 
+1010000000000000 
+0000101100001110 
+1010000000000000 
+0000101100001110 
+1010000000000000 
+0000101100001111 
+1010100000000000  
+1010100000000000  
+1010100000000000  
+1010100000000000  
+1010100000000000  
+0000000000000000
 
 */

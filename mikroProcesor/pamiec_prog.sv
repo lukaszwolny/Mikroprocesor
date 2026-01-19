@@ -3,6 +3,9 @@
 /*
     Pamiec Programu.
     
+    REQ_PROG:
+      REQ_PROG_1:
+        Po ustaleniu sygnalu na wejsciu, na wyjsciu pojawia sie odpowiedna zawartosc pamieci zpod podanego adresu.
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +22,7 @@ module pamiec_prog#(
     
     initial begin
         //inicjalizacja pamieci
-        $readmemb("../mem/imemfile_11.mem",ROM);//imemfile_1.mem
+        $readmemb("../mem/imemfile_12.mem",ROM);//imemfile_1.mem
     end 
 
     assign out = ROM[a];

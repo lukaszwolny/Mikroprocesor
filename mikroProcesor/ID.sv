@@ -3,7 +3,9 @@
 /*
     Dekoder rozkazow.
 
-
+    REQ_Dekoder:
+      REQ_Dekoder_1:
+        
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -68,7 +70,9 @@ module ID#(
         output logic ID_zapisz_H,
         output logic ID_zapisz_control,
         output logic ID_flaga_clear_licznik,
-        input wire ID_flaga_licznik
+        input wire ID_flaga_licznik,
+
+        output logic ID_dioda_error
     );
 
     logic [4:0] instrukcja;
@@ -113,6 +117,8 @@ module ID#(
         ID_zapisz_H = '0;
         ID_zapisz_control = '0;
         ID_flaga_clear_licznik = '0;
+        //-----------------------
+        ID_dioda_error = '0;
 
         //Najpierw przerwanie
         if(jest_przerwanie) begin
@@ -311,7 +317,7 @@ module ID#(
                     ID_zapisz_L = '1;
                 end
                 5'b11100: begin
-                    //TIMER_READ -- IF flagi
+                    //TIMER_READ -- IF flagi  JF
                     if(ID_flaga_licznik) begin
                         skok_ID = '1;
                         adres_skok_ID = rozkaz[7:0];
@@ -368,6 +374,8 @@ module ID#(
                         //wyjatek od przpelnienia
                         skok_ID = '1;
                         adres_skok_ID = 8'b00000110; // 0x06 wyjatek
+                        ID_dioda_error = '1;
+                        int_dis = '1; // off przerwania
                     end else begin
                         ID_push = '1;
                     end
@@ -377,6 +385,8 @@ module ID#(
                     if(ID_stos_empty) begin
                         skok_ID = '1;
                         adres_skok_ID = 8'b00000110; // 0x06 wyjatek
+                        ID_dioda_error = '1;
+                        int_dis = '1;
                     end else begin
                         ID_pop = '1;
                         ALU_op = '0;
@@ -389,6 +399,8 @@ module ID#(
                     if(ID_stos_pc_full) begin
                         skok_ID = '1;
                         adres_skok_ID = 8'b00000110; // 0x06 wyjatek
+                        ID_dioda_error = '1;
+                        int_dis = '1;
                     end else begin
                         skok_ID = '1;
                         ID_push_pc = '1;
@@ -401,6 +413,8 @@ module ID#(
                     if(ID_stos_pc_empty) begin
                         skok_ID = '1;
                         adres_skok_ID = 8'b00000110; // 0x06 wyjatek
+                        ID_dioda_error = '1;
+                        int_dis = '1;
                     end else begin
                         ID_pop_pc = '1;
                         skok_ID = '1;

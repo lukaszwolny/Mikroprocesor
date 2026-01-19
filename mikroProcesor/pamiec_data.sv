@@ -7,6 +7,12 @@
     pod adresem 255 wpisywany nr strony. czyli pamiec 0-254 dostepnych x ilosc stron
     
     1<<ADDR_WIDTH 1 przesuniete w lewo o 8. czyli 2^8.
+
+
+    REQ_MEM:
+      zapis, stronnicowanie
+      REQ_MEM_1:
+
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +41,7 @@ module pamiec_data #(
     logic [DATA_WIDTH_MEM-1:0] mem [0:MEM_SIZE_Fizycznie-1];
 
     //Bez resetu
-    always_ff @( posedge clk) begin : always_mem //always_ff   always
+    always @( posedge clk) begin : always_mem //always_ff   always
         if(rst) strona <= '0;
         else begin
             if(wr_mem) begin

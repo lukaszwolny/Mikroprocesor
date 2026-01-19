@@ -6,6 +6,10 @@
     Interrupt Controller
     Przerwanie bez masek i priorytet ma zewnetrzne przerwanie nad licznikiem
     To idzie najpierw do ID a potem do pc z ID idzie
+
+    REQ_Przerwanie:
+      REQ_Przerwanie_1:
+        
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +30,7 @@ logic timer_int_prev;
 logic int_a; // przerwanie przycisk
 logic int_b; //przerwanie timer
 
-always_ff @(posedge clk) begin    //always_ff
+always @(posedge clk) begin    //always_ff
     if(rst) begin
         przerwanie_en <= '0;
         przerwanie <= '0;
@@ -49,7 +53,7 @@ always_ff @(posedge clk) begin    //always_ff
         //zbocze i ext_int_en
         ext_int_prev <= ext_int;
         timer_int_prev <= timer_int;
-        if(przerwanie_en && ext_int && ~ext_int_prev) begin
+        if(/*przerwanie_en && */ext_int && ~ext_int_prev) begin //Tutaj dla przerwania zewnetrznego - ma piorytet. Jak sie pojawi to, sie zapisuje i czeka az ponownie bedzie int_enable. - zapisuje sie nawet jak jest disaple
             int_a <= 1'b1;
         end
         if(przerwanie_en && timer_int && ~timer_int_prev) begin

@@ -2,7 +2,32 @@
 //////////////////////////////////////////////////////////////////////////////////
 /*
     ALU.
+    
+    REQ_ALU:
 
+    --
+    albo inaczej:
+    Moduł ALU musi wykonać operację matematyczną lub logiczną zgodnie z wartością podaną na 3-bitowym wejściu sterującym alu_op. Wybrany wynik musi zostać wystawiony na wyjście alu_out po ustaleniu się sygnałów wejściowych.
+
+      REQ_ALU_01:
+      (operacje - alu_op)
+        Moduł musi wykonać operację dodawania (ADD) dwóch liczb 8-bitowych i udostępnić wynik na wyjściu.
+        LD
+        AND
+        OR
+        XOR
+        ADD
+        SUB
+        INK
+        NOT
+        ADDC   - tutaj jeszcze flaga??...
+        SUBC  - i tu toze
+      REQ_ALU_02:
+      (flagi)
+        Jeśli wynik operacji jest równy zero, moduł musi ustawić flagę ZERO_FLAG na stan wysoki (1).
+      REQ_ALU_03:
+      (przepelnienie / OV) ?? to do flag
+        W przypadku wystąpienia przeniesienia poza zakres 8 bitów, moduł musi ustawić flagę przeniesienia CARRY_FLAG.
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +48,7 @@ module ALU #(
 
     logic carry;
 
-    always_comb begin : blockName  //always_comb  always @(*) 
+    always @(*) begin : blockName  //always_comb  always @(*) 
         carry = 0;
         case(alu_op)
         4'b0000: begin

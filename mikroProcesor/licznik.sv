@@ -10,6 +10,11 @@
     0- Preskaler_1 ,1- Preskaler_2 ,2- Preskaler_3 ,3- Interrupt_enable  ,4- Tryb ,5-  ,6-  ,7- Enable ,  
 
     odczyt wartosci timea przer pooling - flaga jest generowana i poprostu if jest zrobiony
+
+    REQ_Licznik:
+      REQ_Licznik_1:
+        
+
 */
 ///////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +38,7 @@ logic int_enable;
 logic tryb;
 logic licznik_enable;
 
-always_ff @(posedge clk) begin   //always
+always @(posedge clk) begin   //always  always_ff
     if(rst) begin
         licznik <= '0;
         licznik_int <= '0;

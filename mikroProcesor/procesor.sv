@@ -7,7 +7,10 @@
     0x02 przerwanie ext
     0x04 przerwanie licznik
     0x06 wyjatkek(jeden wspolny) od stosu _ error ( tu bedzie skok gdzies i tam bedzie petla bez wyjscia + np dioda ERROR (osobne wyj z procka))
-    0x06 main:
+    JMP 0x06 - petla i tyle. i dioda zapala sie.
+    0x08 main:
+
+    //tutaj tez wymagania?
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +31,7 @@ module procesor(
     // inout [7:0] LED //8 diody
 
     //Dioda do oznaczanie ERROR jako wyjatek ze stosu -
-    //outout logic dioda_error // i w procesor.sv bedzie zapamietywany stan z ID(jak error ze stosem bedzie) i wystawiany na diode(zapali sie)
+    output logic dioda_error, // i w procesor.sv bedzie zapamietywany stan z ID(jak error ze stosem bedzie) i wystawiany na diode(zapali sie)
     
     inout logic [7:0] in_out_A,//SW 
     inout logic [7:0] in_out_B,//SW, albo przycisk
@@ -51,7 +54,7 @@ module procesor(
     // localparam P_PORT_liczba = 3;//BEZ TEGO. 3 PORTY POPROSTU
 
     //Stos - wielkosc
-    localparam P_STOS_depth = 32;
+    localparam P_STOS_depth = 5;   //32 normalnie . Testy = 5;
 
     //pamiec DANYCH - strony.
     localparam DATA_szerokosc_strony = 4;//ile stron
@@ -128,6 +131,44 @@ module procesor(
     wire flaga_licznik;
     wire flaga_clear_licznik;
 
+    //Dioda error
+    wire dioda_err;
+    logic dioda_error_reg;
+
+    /*
+    - co jak ten error pojawi sie w przerwaniu?
+    */
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // dioda_error
+    always @(posedge clk) begin
+      if(~button_c) begin
+        dioda_error <= '0; //albo 1 - ma nie swiecic.
+        dioda_error_reg <= '0;
+      end else begin
+        if(dioda_err && !dioda_error_reg) begin
+          dioda_error <= 1'b1;//albo 0. ma swiecic teraz
+          dioda_error_reg <= 1'b1;
+        end
+      end
+    end
+    // always @(*) begin
+    //   if(~button_c) begin
+    //     dioda_error = '0; //albo 1 - ma nie swiecic.
+    //     dioda_error_reg = '0;
+    //   end else begin
+    //     if(dioda_err && !dioda_error_reg) begin
+    //       dioda_error = 1'b1;//albo 0. ma swiecic teraz
+    //       dioda_error_reg = 1'b1;
+    //     end else begin
+    //       dioda_error = 1'b0;
+    //     end
+    //   end
+    // end
+    ////////////////////////////////////////////////////////////////////////////////////////////////////   
+
+
+
     //instancje
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -151,7 +192,7 @@ module procesor(
     //Stos - dla PC
     stos #(
         .STOS_data_rozm(P_PROG_addres),
-        .STOS_Rozm(5)//P_STOS_depth
+        .STOS_Rozm(P_STOS_depth)//P_STOS_depth
     ) u_pc_stos(
         .clk(clk),
         .rst(~button_c),
@@ -211,7 +252,8 @@ module procesor(
         .ID_zapisz_H(zapisz_High),
         .ID_zapisz_control(zapisz_control),
         .ID_flaga_clear_licznik(flaga_clear_licznik),
-        .ID_flaga_licznik(flaga_licznik)
+        .ID_flaga_licznik(flaga_licznik),
+        .ID_dioda_error(dioda_err)
     );
 
     //pamiec ROM do programu
@@ -266,7 +308,7 @@ module procesor(
 
     //MUX ten duzy:
     logic [P_PROC_data-1:0] mux_I_R_M_P;
-    always_comb begin : always_MUX_IM_Rx_MEM_PORT //always_comb    always @(*) begin :
+    always @(*) begin : always_MUX_IM_Rx_MEM_PORT //always_comb    always @(*) begin :
         case(MUX_im_rx_mem_port)
             3'b000: mux_I_R_M_P = stala_zmienna;//zmienna
             3'b001: mux_I_R_M_P = out_Rx;//z Rx
