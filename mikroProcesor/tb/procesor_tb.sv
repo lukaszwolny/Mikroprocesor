@@ -76,15 +76,15 @@ module procesor_tb;
 
             #20;
 
-            rst = 1;//0;
+            rst = 0;//1;
             ext_przerwanie = 0;
-            SW_A = 8'b0000;
-            SW_B = 8'b0000;
+            SW_A = 8'b00000000;
+            SW_B = 8'b00000000;
 
             #10;
-            rst = 0;//1;
-            #10;
             rst = 1;//0;
+            #10;
+            rst = 0;//1;
             #10;
 
             //przerwanie
@@ -108,9 +108,17 @@ module procesor_tb;
             #150;
             ext_przerwanie = 0;
 
-            SW_A = 8'b0101;
-            SW_B = 8'b0100;
-
+            //13
+            SW_A = 8'b01010000;
+            SW_B = 8'b00000001;
+            #200;
+            SW_B = 8'b00000000;
+            #200;
+            SW_B = 8'b00000001;
+            #500;
+            SW_B = 8'b00000000;
+            #200;
+            SW_B = 8'b00000001;
             // @(posedge u_procesor.u_ID.ID_push);
             // $display("ID_push wskaznik wskazuje na (przed push)=  %h", u_procesor.u_stos.stos_ptr);
             // $display("PUSH   stos PRZED= %h", u_procesor.u_stos.stos_pamiec[u_procesor.u_stos.stos_ptr]);
@@ -136,17 +144,17 @@ module procesor_tb;
             // $display("POP wskaznik wskazuje na (przed POP)=  %h", u_procesor.u_stos.stos_ptr);
 
 
-            #150;
+            // #150;
 
-            SW_A = 8'b00000000;
-            // SW_B = 8'b00000000;
+            // SW_A = 8'b00000000;
+            // // SW_B = 8'b00000000;
 
-            #150;
-            SW_A = 8'b11111111;
+            // #150;
+            // SW_A = 8'b11111111;
   
-            #150;
-            SW_A = 8'hA;
-            SW_B = 8'hB;
+            // #150;
+            // SW_A = 8'hA0000;
+            // SW_B = 8'hB0000;
 
 
             #2000;
@@ -1117,4 +1125,475 @@ main: sei
 1010100000000000  
 0000000000000000
 
+*/
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+//TESTY NA PLYTCE
+//13.
+/*
+Test tego przycisku jednego w porcie
+i tutaj widac drgania...
+
+//--
+JMP main
+00100 000 00001000            //00010100
+nic-- ..000..
+nic
+nic---
+nic
+nic ---
+nic --
+nic
+(8):
+LD #0;8'b00000000
+00001 011 00000000
+ST DDR0; //A - SW
+00011 011 00000000
+LD # 8'b11111110   -> 0 - przycisk
+00001 011 11111110
+ST DDR1; //B - nic + 1 przycisk
+00011 011 00000001
+LD #8'b11111111;  //LEed
+00001 011 11111111
+ST DDR2;  //C - diody
+00011 011 00000010
+LD # 8'b11111110
+00001 011 11111110
+ST R7   - do R7 potrzebne do operacji OR
+00011 001 00000111
+LD # 0 8'b0000000
+00001 011 00000000
+ST R0
+00011 001 00000000
+ST R1 //to bedzie spr czy przycisk jest wcisniety
+00011 001 00000001
+ST R2
+00011 001 00000010
+(20) main:
+LD PIN1  //sprawdzanie tego przycisku
+00001 010 00000001
+OR R7
+00101 000 00000111
+NOT
+01110 000 00000000
+IF Z (JZ) skok do: przycisk  -- oznacza ze wcisniety przycisk jest
+00111 000 00011110
+LD R0
+00001 001 00000000
+ST R2 //reset R2.
+00011 001 00000010
+//dalsza czesc programu
+(26)dalej:
+...
+LD R1
+00001 001 00000001
+ST PORT2 -> na diody 
+00011 010 00000010
+...
+JMP main
+00100 000 00010100
+RST
+00000 000 00000000
+
+(30) przycisk:
+LD R2
+00001 001 00000010
+JNZ jmp: back  //spr to R2 jesli jest 0 to pierwszy raz tu jestem, jak 1 to juz bylem czyli powrot
+01011 000 00100101 
+INC
+01101 000 00000000
+ST R2
+00011 001 00000010
+LD R1
+00001 001 00000001
+INC
+01101 000 00000000
+ST R1
+00011 001 00000001
+(37)back: JMP dalej
+00100 000 00011010
+RST
+00000 000 00000000
+
+*/
+
+
+/*
+//14
+to samo ale z licznikiem 20ms do usuniecia drgan
+licznik + licznik_flaga
+
+
+//--
+JMP main
+00100 000 00001000            //00010100
+nic-- ..000..
+nic
+nic---
+nic
+nic ---
+nic --
+nic
+(8):
+LD #0;8'b00000000
+00001 011 00000000
+ST DDR0; //A - SW
+00011 011 00000000
+LD # 8'b11111110   -> 0 - przycisk
+00001 011 11111110
+ST DDR1; //B - nic + 1 przycisk
+00011 011 00000001
+LD #8'b11111111;  //LEed
+00001 011 11111111
+ST DDR2;  //C - diody
+00011 011 00000010
+LD # 8'b11111110
+00001 011 11111110
+ST R7   - do R7 potrzebne do operacji OR
+00011 001 00000111
+LD # 0 8'b0000000
+00001 011 00000000
+ST R0
+00011 001 00000000
+ST R1 //to bedzie spr czy przycisk jest wcisniety
+00011 001 00000001
+ST R2
+00011 001 00000010
+(20) main:
+LD PIN1  //sprawdzanie tego przycisku
+00001 010 00000001
+OR R7
+00101 000 00000111
+NOT
+01110 000 00000000
+IF Z (JZ) skok do: przycisk  -- oznacza ze wcisniety przycisk jest
+00111 000 00011110
+LD R0
+00001 001 00000000
+ST R2 //reset R2.
+00011 001 00000010
+//dalsza czesc programu
+(26)dalej:
+...
+LD R1
+00001 001 00000001
+ST PORT2 -> na diody 
+00011 010 00000010
+...
+JMP main
+00100 000 00010100
+RST
+00000 000 00000000
+
+(30) przycisk:
+//tutaj ten licznik 20ms
+
+TIMER_CTRL off
+11101 000 00000011
+TIMER_SET_H 0111 1010
+11110 000 01111010
+TIMER_SET_L 0001 0010
+11011 000 00010010
+TIMER_CTRL on
+11101 000 10000011
+
+//spr ponownie czy jest wcisniety
+//tak - dalej, nie - jmp back
+//czekam na flage
+(34) IF(flaga_licznik) TIMER_READ -- IF flagi  JF  //JF jest_flaga
+11100 000 00100100
+JMP 34  0010 0010
+00100 000 00100010
+//znou spr przycisk
+(36)jest_flaga:
+LD PIN1  //sprawdzanie tego przycisku
+00001 010 00000001
+OR R7
+00101 000 00000111
+NOT
+01110 000 00000000
+
+IF Z (JNZ) skok do: back  -- oznacza ze przycisk nie jest wcisniety
+01011 000 00101111   //01011
+(40)LD R2
+00001 001 00000010
+JNZ jmp: back  //spr to R2 jesli jest 0 to pierwszy raz tu jestem, jak 1 to juz bylem czyli powrot
+01011 000 00101111
+INC
+01101 000 00000000
+ST R2
+00011 001 00000010
+LD R1
+00001 001 00000001
+INC
+01101 000 00000000
+ST R1
+00011 001 00000001
+(47)back: JMP dalej
+00100 000 00011010
+RST
+00000 000 00000000
+
+
+30-36
+0000000000000000
+1110100000000011
+1111000001111010
+1101100000010010
+1110100010000011
+1110000000100100
+
+*/
+
+
+
+
+/*
+15.
+To samo tylko ze na 7seg
+cyfry od 0 do 15 zapisane kod 7seg w pamieci na 1 stronie. 
+adres do MEM po pośrednim (przez Rx)
+
+//---
+JMP main
+00100 000 00001000            //00010100
+nic-- ..000..
+nic
+nic---
+nic
+nic ---
+nic --
+nic
+(8):
+LD #0;8'b00000000
+00001 011 00000000
+ST DDR0; //A - SW
+00011 011 00000000
+LD # 8'b11111110   -> 0 - przycisk
+00001 011 11111110
+ST DDR1; //B - nic + 1 przycisk
+00011 011 00000001
+LD #8'b11111111;  //LEed
+00001 011 11111111
+ST DDR2;  //C - diody
+00011 011 00000010
+LD # 8'b11111110
+00001 011 11111110
+ST R7   - do R7 potrzebne do operacji OR
+00011 001 00000111
+LD # 0 8'b0000000
+00001 011 00000000
+ST R0
+00011 001 00000000
+ST R1 //to bedzie spr czy przycisk jest wcisniety
+00011 001 00000001
+ST R2
+00011 001 00000010
+//7seg kody
+LD #1 00000001
+00001 011 00000001
+ST R6 //rejestr do nr stron przechowuje
+00011 001 00000110
+ST 255 - pod adres 255(zmiana strony na 1)
+00011 000 11111111
+LD # 00000001 //0
+00001 011 00000001
+ST 0
+00011 000 00000000
+LD # 01001111 //1
+00001 011 01001111
+ST 1
+00011 000 00000001
+LD # 00010010 //2
+00001 011 00010010
+ST 2
+00011 000 00000010
+LD # 00000110 //3
+00001 011 10000110
+ST 3
+00011 000 00000011
+LD # 01001100 //4
+00001 011 01001100
+ST 4
+00011 000 00000100
+LD # 00100100 //5
+00001 011 00100100
+ST 5
+00011 000 00000101
+LD # 00100000 //6
+00001 011 00100000
+ST 6
+00011 000 00000110
+LD # 00001111  //7
+00001 011 00001111
+ST 7
+00011 000 00000111
+LD # 00000000 //8
+00001 011 00000000
+ST 8
+00011 000 00001000
+LD # 00000100 //9
+00001 011 00000100
+ST 9
+00011 000 00001001
+LD # 00001000 //A
+00001 011 00001000
+ST 10
+00011 000 00001010
+LD # 01100000 //B
+00001 011 01100000
+ST 11
+00011 000 00001011
+LD # 00110001 //C
+00001 011 00110001
+ST 12
+00011 000 00001100
+LD # 01000010 //D
+00001 011 01000010
+ST 13
+00011 000 00001101
+LD # 00110000 //E
+00001 011 00110000
+ST 14
+00011 000 00001110
+LD # 00111000 //F
+00001 011 00111000
+ST 15
+00011 000 00001111
+LD R0
+00001 001 00000000
+ST R6
+00011 001 00000110
+ST 255 - zmiana strony spowrotem na 0.
+00011 000 11111111
+(58) main:
+LD PIN1  //sprawdzanie tego przycisku
+00001 010 00000001
+OR R7
+00101 000 00000111
+NOT
+01110 000 00000000
+IF Z (JZ) skok do: przycisk  -- oznacza ze wcisniety przycisk jest
+00111 000 01001011
+LD R0
+00001 001 00000000
+ST R2 //reset R2.
+00011 001 00000010
+//dalsza czesc programu
+(64)dalej:
+...
+
+
+
+LD #00001111 --zaladowanie maski
+00001 011 00001111
+AND R1  -maska AND R1 = 4bity 0-15
+00010 000 00000001
+ST R1 - zapisz -> w R1 jest adres seg do wys
+00011 001 00000001
+LD #00000001 
+00001 011 00000001
+ST 255 - zmiana na 1 strone
+00011 000 11111111
+
+LD #00000000 
+00001 011 01111111
+ST PORT2 -> na 7seg
+00011 010 00000010
+
+LD @R1 - zaladuj znak
+00001 100 00000001
+ST PORT2 -> na 7seg
+00011 010 00000010
+
+
+
+
+...
+JMP main
+00100 000 00111010
+RST
+00000 000 00000000
+(pop 73)
+(75) przycisk:
+//tutaj ten licznik 20ms
+
+TIMER_CTRL off
+11101 000 00000011
+TIMER_SET_H 0111 1010
+11110 000 01111010
+TIMER_SET_L 0001 0010
+11011 000 00010010
+TIMER_CTRL on
+11101 000 10000011
+
+//spr ponownie czy jest wcisniety
+//tak - dalej, nie - jmp back
+//czekam na flage
+(pop 77)
+(79) IF(flaga_licznik) TIMER_READ -- IF flagi  JF  //JF jest_flaga
+11100 000 01010001
+JMP 79  0100 1101
+00100 000 01001111
+//znou spr przycisk
+(pop 79)
+(81)jest_flaga:
+LD PIN1  //sprawdzanie tego przycisku
+00001 010 00000001
+OR R7
+00101 000 00000111
+NOT
+01110 000 00000000
+
+IF Z (JNZ) skok do: back  -- oznacza ze przycisk nie jest wcisniety
+01011 000 01011100   //01011
+(pop 83)
+(85)LD R2
+00001 001 00000010
+JNZ jmp: back  //spr to R2 jesli jest 0 to pierwszy raz tu jestem, jak 1 to juz bylem czyli powrot
+01011 000 01011100
+INC
+01101 000 00000000
+ST R2
+00011 001 00000010
+LD R1
+00001 001 00000001
+INC
+01101 000 00000000
+ST R1
+00011 001 00000001
+(pop 90)
+(92)back: JMP dalej
+00100 000 01000000
+RST
+00000 000 00000000
+
+
+*/
+
+
+/*
+
+16.
+push/pop -> error dioda (bez 7seg)
+
+
+*/
+
+
+/*
+17.
+przerwania zew+licznik 
+licznik co 1s(lub wiecej) inkrementuje. przerwanie zeruje
+
+*/
+
+
+/*
+
+18.
+jakis kalkulator co wykorzysta doslownie wszystko.
+podaje 2 liczby po SW. 1 liczba - przycisk 2 liczba
 */

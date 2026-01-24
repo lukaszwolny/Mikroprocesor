@@ -2,10 +2,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 /*
     Pamiec Programu.
+    Moduł pamiec_prog jest pamięcią ROM zawierającą program procesora. Na podstawie adresu wejściowego a zwraca słowo instrukcji out.
     
     REQ_PROG:
-      REQ_PROG_1:
-        Po ustaleniu sygnalu na wejsciu, na wyjsciu pojawia sie odpowiedna zawartosc pamieci zpod podanego adresu.
+        REQ_PROG_1: 
+            Moduł musi przechowywać program w postaci stałej pamięci ROM o rozmiarze 2^ADDR_WIDTH słów, gdzie każde słowo ma szerokość DATA_WIDTH bitów.
+        REQ_PROG_2: 
+            Na wejściu a (adres) moduł ma przyjmować wartość w zakresie [0, 2^ADDR_WIDTH - 1].
+        REQ_PROG_3: 
+            Moduł ma zwracać na wyjściu out zawartość komórki pamięci o adresie a w trybie asynchronicznym.
+
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +28,7 @@ module pamiec_prog#(
     
     initial begin
         //inicjalizacja pamieci
-        $readmemb("../mem/imemfile_12.mem",ROM);//imemfile_1.mem
+        $readmemb("../mem/imemfile_15.mem",ROM);//imemfile_1.mem(tak w vivado)
     end 
 
     assign out = ROM[a];

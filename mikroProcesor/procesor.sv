@@ -3,14 +3,15 @@
 /*
     Procesor.
 
-    0x00 JMP main
+    0x00 JMP start
     0x02 przerwanie ext
     0x04 przerwanie licznik
     0x06 wyjatkek(jeden wspolny) od stosu _ error ( tu bedzie skok gdzies i tam bedzie petla bez wyjscia + np dioda ERROR (osobne wyj z procka))
     JMP 0x06 - petla i tyle. i dioda zapala sie.
-    0x08 main:
+    0x08 start: inicjializacje jakies
+    ...
+    main:
 
-    //tutaj tez wymagania?
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +55,7 @@ module procesor(
     // localparam P_PORT_liczba = 3;//BEZ TEGO. 3 PORTY POPROSTU
 
     //Stos - wielkosc
-    localparam P_STOS_depth = 5;   //32 normalnie . Testy = 5;
+    localparam P_STOS_depth = 32;   //32 normalnie . Testy = 5;
 
     //pamiec DANYCH - strony.
     localparam DATA_szerokosc_strony = 4;//ile stron
@@ -135,14 +136,10 @@ module procesor(
     wire dioda_err;
     logic dioda_error_reg;
 
-    /*
-    - co jak ten error pojawi sie w przerwaniu?
-    */
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // dioda_error
     always @(posedge clk) begin
-      if(~button_c) begin
+      if(button_c) begin//~button_c
         dioda_error <= '0; //albo 1 - ma nie swiecic.
         dioda_error_reg <= '0;
       end else begin
@@ -179,7 +176,7 @@ module procesor(
     //PC  - licznik rozkazow
     pc #(.W(P_PROG_addres)) u_pc(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .ID_rst(pc_rst),
         .skok_pc(skok),
         .skok_pc_stos(skok_stos),
@@ -195,7 +192,7 @@ module procesor(
         .STOS_Rozm(P_STOS_depth)//P_STOS_depth
     ) u_pc_stos(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .push(stos_pc_push),
         .pop(stos_pc_pop),
         .data_in(pc_licznik),
@@ -276,7 +273,7 @@ module procesor(
     //przerwanie
     przerwanie u_przerwanie(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .int_enable(przerwanie_on),
         .int_disable(przerwanie_off),
         .ext_int(przerwanie_zewnetrzne),
@@ -288,7 +285,7 @@ module procesor(
     //licznik
     licznik u_licznik(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .wartosc(wartosc_do_licznika),
         .zapisz_L(zapisz_Low),
         .zapisz_H(zapisz_High),
@@ -329,7 +326,7 @@ module procesor(
         .Rx_rozm_data(P_PROC_data)
     ) u_rejestry (
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .wr_Rx(wr_Rx),
         .nr_Rx(numer_Rx),
         .dane(data),
@@ -343,7 +340,7 @@ module procesor(
       .DATA_WIDTH_STRONY(DATA_szerokosc_strony)
     ) u_pamiec_data (
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .wr_mem(wr_MEM),
         .adres(address_wybor),
         .dane(data),
@@ -356,7 +353,7 @@ module procesor(
       //.Port_liczba(P_PORT_liczba)
     ) u_port(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .dane(data),
         .nr_P_DDRx(nr_DDRx),
         .nr_P_PORTx(nr_PORTx),
@@ -375,7 +372,7 @@ module procesor(
         .STOS_Rozm(P_STOS_depth)
     ) u_stos(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .push(stos_push),
         .pop(stos_pop),
         .data_in(data),
@@ -413,7 +410,7 @@ module procesor(
       .ALU_rozm_data(P_PROC_data)
     ) u_akumulator(
         .clk(clk),
-        .rst(~button_c),
+        .rst(button_c),//~button_c
         .a(out_alu),
         .A_ce(a_ce),
         .out(data)
@@ -422,7 +419,7 @@ module procesor(
     //Flagi
     flagi u_flagi(
       .clk(clk),
-      .rst(~button_c),
+      .rst(button_c),//~button_c
       .flagi_en(a_ce),
       .C_OV_en(ID_C_OV_en),
       .C_OV_kasowanie(ID_C_OV_kasowanie),

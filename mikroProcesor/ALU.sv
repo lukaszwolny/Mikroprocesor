@@ -2,32 +2,39 @@
 //////////////////////////////////////////////////////////////////////////////////
 /*
     ALU.
-    
+    Moduł ALU realizuje jednostkę arytmetyczno-logiczną procesora odpowiedzialną za wykonywanie operacji logicznych, arytmetycznych oraz modyfikujących dane wejściowe. Operacja wykonywana przez ALU jest wybierana za pomocą kodu sterującego alu_op. Moduł generuje wynik operacji oraz zestaw flag, które odzwierciedlają właściwości wyniku i mogą być wykorzystywane przez procesor.
+
     REQ_ALU:
-
-    --
-    albo inaczej:
-    Moduł ALU musi wykonać operację matematyczną lub logiczną zgodnie z wartością podaną na 3-bitowym wejściu sterującym alu_op. Wybrany wynik musi zostać wystawiony na wyjście alu_out po ustaleniu się sygnałów wejściowych.
-
-      REQ_ALU_01:
-      (operacje - alu_op)
-        Moduł musi wykonać operację dodawania (ADD) dwóch liczb 8-bitowych i udostępnić wynik na wyjściu.
-        LD
-        AND
-        OR
-        XOR
-        ADD
-        SUB
-        INK
-        NOT
-        ADDC   - tutaj jeszcze flaga??...
-        SUBC  - i tu toze
-      REQ_ALU_02:
-      (flagi)
-        Jeśli wynik operacji jest równy zero, moduł musi ustawić flagę ZERO_FLAG na stan wysoki (1).
-      REQ_ALU_03:
-      (przepelnienie / OV) ?? to do flag
-        W przypadku wystąpienia przeniesienia poza zakres 8 bitów, moduł musi ustawić flagę przeniesienia CARRY_FLAG.
+        REQ_ALU_1:
+            Moduł musi realizować operacje arytmetyczno-logiczne na danych wejściowych a i b o szerokości określonej parametrem ALU_rozm_data.
+        REQ_ALU_2:
+            Wybór operacji wykonywanej przez ALU musi być realizowany na podstawie 4-bitowego sygnału sterującego alu_op.
+        REQ_ALU_3:
+            Dla kodu operacji alu_op = 0000 moduł musi przekazywać dane z wejścia b bez modyfikacji na wyjście out.
+        REQ_ALU_4:
+            Dla kodów operacji alu_op = 0001, 0010 oraz 0011 moduł musi realizować odpowiednio operacje logiczne AND, OR oraz XOR na wejściach a i b.
+        REQ_ALU_5:
+            Dla kodu operacji alu_op = 0100 moduł musi realizować operację dodawania (a + b) z generacją flagi przeniesienia.
+        REQ_ALU_6:
+            Dla kodu operacji alu_op = 0101 moduł musi realizować operację odejmowania (a - b) z generacją flagi przeniesienia.
+        REQ_ALU_7:
+            Dla kodu operacji alu_op = 0110 moduł musi realizować inkrementację wartości wejścia a.
+        REQ_ALU_8:
+            Dla kodu operacji alu_op = 0111 moduł musi realizować operację negacji bitowej wejścia a.
+        REQ_ALU_9:
+            Dla kodów operacji alu_op = 1000 oraz 1001 moduł musi realizować odpowiednio operacje dodawania i odejmowania z przeniesieniem, wykorzystując sygnał wejściowy C_in.
+        REQ_ALU_10:
+            Moduł musi generować flagę zera (Z), która jest ustawiona, gdy wynik operacji jest równy zero.
+        REQ_ALU_11:
+            Moduł musi generować flagę znaku (S) na podstawie najstarszego bitu wyniku operacji.
+        REQ_ALU_12:
+            Moduł musi generować flagę parzystości (P), która jest ustawiona, gdy liczba jedynek w wyniku operacji jest parzysta.
+        REQ_ALU_13:
+            Moduł musi generować flagę przeniesienia (C) dla operacji arytmetycznych.
+        REQ_ALU_14:
+            Moduł musi generować flagę przepełnienia arytmetycznego (OV) zgodnie z zasadami arytmetyki ze znakiem.
+           
+ Wszystkie operacje ALU oraz generacja flag muszą być realizowane kombinacyjnie, bez wykorzystania sygnału zegarowego.
 */
 //////////////////////////////////////////////////////////////////////////////////
 
