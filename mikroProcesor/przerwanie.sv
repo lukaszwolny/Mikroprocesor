@@ -58,7 +58,8 @@ always @(posedge clk) begin    //always_ff
         przerwanie <= '0;
         int_vector <= '0;
 
-        if(int_enable) begin
+        //enable/disable
+        if(int_enable) begin 
             przerwanie_en <= 1'b1; 
         end else if(int_disable) begin
             przerwanie_en <= 1'b0; 

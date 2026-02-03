@@ -2,16 +2,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 /*
     Procesor.
-
-    0x00 JMP start
-    0x02 przerwanie ext
-    0x04 przerwanie licznik
-    0x06 wyjatkek(jeden wspolny) od stosu _ error ( tu bedzie skok gdzies i tam bedzie petla bez wyjscia + np dioda ERROR (osobne wyj z procka))
-    JMP 0x06 - petla i tyle. i dioda zapala sie.
-    0x08 start: inicjializacje jakies
-    ...
-    main:
-
 */
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -51,14 +41,13 @@ module procesor(
     localparam P_PROC_data = 8;//rozmiar danych
     localparam P_MEM_address = 8;
 
-    //Porty - liczba A,B,C,...
-    // localparam P_PORT_liczba = 3;//BEZ TEGO. 3 PORTY POPROSTU
+    //Porty - liczba A,B,C. 3 PORTY POPROSTU
 
     //Stos - wielkosc
     localparam P_STOS_depth = 32;   //32 normalnie . Testy = 5;
 
     //pamiec DANYCH - strony.
-    localparam DATA_szerokosc_strony = 4;//ile stron
+    localparam DATA_szerokosc_strony = 4;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //sygnaly miedzy elementami
@@ -149,19 +138,6 @@ module procesor(
         end
       end
     end
-    // always @(*) begin
-    //   if(~button_c) begin
-    //     dioda_error = '0; //albo 1 - ma nie swiecic.
-    //     dioda_error_reg = '0;
-    //   end else begin
-    //     if(dioda_err && !dioda_error_reg) begin
-    //       dioda_error = 1'b1;//albo 0. ma swiecic teraz
-    //       dioda_error_reg = 1'b1;
-    //     end else begin
-    //       dioda_error = 1'b0;
-    //     end
-    //   end
-    // end
     ////////////////////////////////////////////////////////////////////////////////////////////////////   
 
 

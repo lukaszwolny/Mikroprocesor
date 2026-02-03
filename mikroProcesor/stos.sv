@@ -21,8 +21,7 @@
             Po wykonaniu operacji pop, stos nie może być oznaczony jako pełny, a w przypadku usunięcia ostatniego elementu musi zostać ustawiona flaga empty.
         REQ_Stos_8:
             Podczas operacji pop, jeżeli stos nie jest pusty, moduł musi wystawić na wyjściu data_out wartość elementu znajdującego się na wierzchu stosu.
-        REQ_Stos_9:
-            Jeżeli push = 1 i pop = 1 jednocześnie, to operacja jest nieokreślona (brak działania), moduł nie gwarantuje poprawnego zachowania.
+
 
 */
 //////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +71,7 @@ module stos#(
 
     always @(*) begin   //always_comb   always @(*) begin : blockName
         if(pop && !empty) begin
-           data_out = stos_pamiec[stos_ptr - 1];
+           data_out = stos_pamiec[stos_ptr - 1'b1];//1
         end else begin
            data_out = '0;
         end

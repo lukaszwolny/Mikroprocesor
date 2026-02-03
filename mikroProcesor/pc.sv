@@ -38,11 +38,11 @@ module pc
 
     always @( posedge clk ) begin : LicznikRozkazow  //always_ff  always @( posedge clk )
         if(rst || ID_rst) PC_count <= '0;
-        else if(skok_pc) begin   /*if(ID_ink)*/ 
-            if(skok_pc_stos) begin
-                PC_count <= adres_skok_pc_stos + ((reti_int_en) ? 1'b0 : 1'b1); // +1 żeby przejsc do nastepnej instrukcji dla CALL.
+        else if(skok_pc) begin   /*if(ID_ink)*/  //jest skok
+            if(skok_pc_stos) begin //adres ze stosu(+1/+0)
+                PC_count <= adres_skok_pc_stos + ((reti_int_en) ? 1'b0 : 1'b1); // +1 żeby przejsc do nastepnej instrukcji dla CALL. bez inc, jesli to powrot z przerwania.
             end else begin
-                PC_count <= adres_skok_pc;
+                PC_count <= adres_skok_pc; //adres z rozkazu
             end
         end else PC_count <= PC_count + 1'b1;
     end

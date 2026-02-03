@@ -56,7 +56,7 @@ always @(posedge clk) begin
     rejestr_flag <= '0;
   end else if(flagi_en) begin // Jesli jest zapis do Acc to zmiana flag. Jesli nie to nie zmieniaj wogole. (bo ST jest problemem)
 
-    if(C_OV_kasowanie) begin // jesli operacje logiczne to usun te flagi - taki sygnał czy z ALU_op jakieś połączenie?
+    if(C_OV_kasowanie) begin // jesli operacje logiczne to usun te flagi
       rejestr_flag[4] <= '0;
       rejestr_flag[1] <= '0;
     end else if(C_OV_en) begin // jesli byly operacje add / sub to aktualizuj odpowiednie flagi.

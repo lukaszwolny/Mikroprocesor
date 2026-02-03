@@ -102,9 +102,9 @@ module ALU #(
     end
 
 //flagi
-assign P = ~^out;
-assign Z = ~|out;//~(out[7] | out[6] | out[5] | out[4] | out[3] | out[2] | out[1] | out[0]);
-assign S = out[7];
+assign P = ~^out;//parzystosc
+assign Z = ~|out;//zero //~(out[7] | out[6] | out[5] | out[4] | out[3] | out[2] | out[1] | out[0]);
+assign S = out[7];//znak
 
 assign OV = (a[7] & b[7] & ~out[7]) | (~a[7] & ~b[7] & out[7]);
 assign C = carry;// : 1'b1 ? 1'b0;

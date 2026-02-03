@@ -69,6 +69,7 @@ always @(posedge clk) begin   //always  always_ff
         wartosc_max <= 16'hFFFF;
     end else begin
         licznik_int <= '0;
+
         //zapis
         if(zapisz_ctr) begin
             int_enable <= wartosc[3];
@@ -97,13 +98,13 @@ always @(posedge clk) begin   //always  always_ff
                 preskaler_cnt <= preskaler_cnt + 1'b1;
             end
             //licznik
-            if(tryb) begin //tryb 1  - przerwania od OV
+            if(tryb) begin //tryb 1  - przerwania od max
                 if(licznik == 16'hFFFF) begin
-                    licznik_flaga <= '1;
-                    licznik_int <= (int_enable) ? 1'b1 : 1'b0;
+                    licznik_flaga <= '1;//flaga
+                    licznik_int <= (int_enable) ? 1'b1 : 1'b0; //przerwanie
                     licznik <= '0;
                 end
-            end else begin // tryb 0 - przerwanie od osiagniecia max
+            end else begin // tryb 0 - przerwanie od osiagniecia ustalonego max
                 if((licznik == wartosc_max - 1'b1) && (preskaler_cnt == preskaler - 1'b1)) begin
                     licznik_flaga <= '1;
                     licznik_int <= (int_enable) ? 1'b1 : 1'b0;
