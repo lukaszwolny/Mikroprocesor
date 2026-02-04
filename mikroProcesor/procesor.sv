@@ -127,7 +127,7 @@ module procesor(
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // dioda_error
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin   //always_ff  always @(posedge clk)
       if(button_c) begin//~button_c
         dioda_error <= '0; //albo 1 - ma nie swiecic.
         dioda_error_reg <= '0;
@@ -281,7 +281,7 @@ module procesor(
 
     //MUX ten duzy:
     logic [P_PROC_data-1:0] mux_I_R_M_P;
-    always @(*) begin : always_MUX_IM_Rx_MEM_PORT //always_comb    always @(*) begin :
+    always_comb begin : always_MUX_IM_Rx_MEM_PORT //always_comb    always @(*) begin :
         case(MUX_im_rx_mem_port)
             3'b000: mux_I_R_M_P = stala_zmienna;//zmienna
             3'b001: mux_I_R_M_P = out_Rx;//z Rx

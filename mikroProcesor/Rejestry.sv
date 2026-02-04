@@ -36,7 +36,7 @@ module Rejestry
 
     logic [Rx_rozm_data-1:0] rejestr [Rx_liczba-1:0];
 
-    always  @(posedge clk) begin : always_Rx  //always_ff    always @( posedge clk )
+    always_ff @(posedge clk) begin : always_Rx  //always_ff    always @( posedge clk )
         if(rst) begin
             for(int i=0;i<Rx_liczba;i++) begin //rejestr <= '{default:'0};
                 rejestr[i] <= '0; 

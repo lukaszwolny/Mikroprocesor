@@ -44,7 +44,7 @@ logic timer_int_prev;
 logic int_a; // przerwanie przycisk
 logic int_b; //przerwanie timer
 
-always @(posedge clk) begin    //always_ff
+always_ff @(posedge clk) begin    //always_ff
     if(rst) begin
         przerwanie_en <= '0;
         przerwanie <= '0;

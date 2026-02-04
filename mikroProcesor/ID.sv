@@ -97,7 +97,7 @@ module ID#(
 
     logic [4:0] instrukcja;
 
-    always @(*)  begin : ID_always   //always_comb   always @(*)  begin : ID_always
+    always @(*) begin : ID_always   //always_comb   always @(*)  begin : ID_always
         instrukcja = rozkaz[15:11]; 
         
         nr_Rx = '0;

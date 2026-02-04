@@ -51,7 +51,7 @@ module flagi(
 
 logic [7:0] rejestr_flag;
 
-always @(posedge clk) begin
+always_ff @(posedge clk) begin // always_ff
   if(rst) begin
     rejestr_flag <= '0;
   end else if(flagi_en) begin // Jesli jest zapis do Acc to zmiana flag. Jesli nie to nie zmieniaj wogole. (bo ST jest problemem)

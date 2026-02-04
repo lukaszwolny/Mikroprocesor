@@ -36,7 +36,7 @@ module pc
         input wire reti_int_en // jak reti to int_en jest + skok_pc i skok_pc_stos i wtedy bez +1
     );
 
-    always @( posedge clk ) begin : LicznikRozkazow  //always_ff  always @( posedge clk )
+    always_ff @( posedge clk ) begin : LicznikRozkazow  //always_ff  always @( posedge clk )
         if(rst || ID_rst) PC_count <= '0;
         else if(skok_pc) begin   /*if(ID_ink)*/  //jest skok
             if(skok_pc_stos) begin //adres ze stosu(+1/+0)

@@ -43,7 +43,7 @@ module stos#(
     logic [STOS_data_rozm-1:0] stos_pamiec [STOS_Rozm-1:0];
     logic [$clog2(STOS_Rozm)-1:0] stos_ptr;
 
-    always @(posedge clk) begin : stos   //always_ff   always @( posedge clk ) begin
+    always_ff @(posedge clk) begin : stos   //always_ff   always @( posedge clk ) begin
         if(rst) begin
             for(int i=0;i < STOS_Rozm; i++) begin
                 stos_pamiec[i] <= '0;
@@ -69,7 +69,7 @@ module stos#(
         end
     end
 
-    always @(*) begin   //always_comb   always @(*) begin : blockName
+    always_comb begin   //always_comb   always @(*) begin : blockName
         if(pop && !empty) begin
            data_out = stos_pamiec[stos_ptr - 1'b1];//1
         end else begin

@@ -54,7 +54,7 @@ module pamiec_data #(
     logic [DATA_WIDTH_MEM-1:0] mem [0:MEM_SIZE_Fizycznie-1];
 
     //Bez resetu
-    always @( posedge clk) begin : always_mem //always_ff   always
+    always_ff @( posedge clk) begin : always_mem //always_ff   always
         if(rst) strona <= '0;
         else begin
             if(wr_mem) begin

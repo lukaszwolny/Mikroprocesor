@@ -55,7 +55,7 @@ module ALU #(
 
     logic carry;
 
-    always @(*) begin : blockName  //always_comb  always @(*) 
+    always_comb begin : blockName  //always_comb  always @(*) 
         carry = 0;
         case(alu_op)
         4'b0000: begin

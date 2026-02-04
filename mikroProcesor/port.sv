@@ -57,7 +57,7 @@ module port #(
 
     //DDR
     logic [7:0] rejestr_DDR [2:0]; //0-A, 1-B, 2-C
-    always @(posedge clk) begin : alwasyDDR  //always_ff   always @( posedge clk )
+    always_ff @(posedge clk) begin : alwasyDDR  //always_ff   always @( posedge clk )
         if(rst) begin
             rejestr_DDR[0] <= '0;//SW
             rejestr_DDR[1] <= '0;//SW
@@ -69,7 +69,7 @@ module port #(
 
     //PORT
     logic [7:0] rejestr_PORT [2:0];
-    always @(posedge clk) begin : alwaysPORT  ///always_ff   always @( posedge clk ) 
+    always_ff @(posedge clk) begin : alwaysPORT  ///always_ff   always @( posedge clk ) 
         if(rst) begin
             rejestr_PORT[0] <= '0;
             rejestr_PORT[1] <= '0;

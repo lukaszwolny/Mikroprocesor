@@ -56,7 +56,7 @@ logic int_enable;
 logic tryb;
 logic licznik_enable;
 
-always @(posedge clk) begin   //always  always_ff
+always_ff @(posedge clk) begin   //always  always_ff
     if(rst) begin
         licznik <= '0;
         licznik_int <= '0;
