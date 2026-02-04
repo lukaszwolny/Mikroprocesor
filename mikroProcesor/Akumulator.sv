@@ -33,7 +33,7 @@ module Akumulator#(
 
     logic [ALU_rozm_data-1:0] akum;
 
-    always @( posedge clk ) begin : always_A  //always_ff   always @( posedge clk ) begin
+    always_ff @( posedge clk ) begin : always_A  //always_ff   always @( posedge clk ) begin
         if(rst) akum <= '0;
         else if(A_ce) akum <= a;
     end
