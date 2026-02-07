@@ -28,7 +28,7 @@ module pamiec_prog#(
     
     initial begin
         //inicjalizacja pamieci
-        $readmemb("../mem/imemfile_15.mem",ROM);//imemfile_1.mem(tak w vivado)
+        $readmemb("../mem/imemfile_17.mem",ROM);//imemfile_1.mem(tak w vivado)
     end 
 
     assign out = ROM[a];
