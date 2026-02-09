@@ -98,6 +98,7 @@ module ALU #(
             //9 - SUBC
             {carry, out} = a - b - C_in;
         end
+        default: out = b;
     endcase    
     end
 
